@@ -1,0 +1,19 @@
+services:
+  web:
+    build: .  # Build the Flask app from the Dockerfile in the current directory
+    expose:
+      - "5000"  # Internal port exposed to other containers (not mapped to host)
+    depends_on:
+      - redis  # Wait for Redis to be ready before starting Flask app
+
+  redis:
+    image: redis:7-alpine  # Lightweight Redis server image using Alpine
+
+  nginx:
+    image: nginx:alpine  # Lightweight Nginx reverse proxy
+    ports:
+      - "80:80"  # Map host port 80 to container port 80 (public access)
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf  # Mount custom Nginx config
+    depends_on:
+      - web  # Ensure Flask app is running before starting Nginx

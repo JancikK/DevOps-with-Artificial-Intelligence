@@ -1,0 +1,45 @@
+# Use lightweight Alpine Linux as the base image
+FROM alpine:3.21.3
+
+# Install required system packages:
+# - python3, pip: core for Python apps
+# - build-base, gcc, python3-dev: needed to build some Python packages (e.g., cryptography, redis)
+# - libffi-dev, openssl-dev, musl-dev, linux-headers: often required by Flask extensions or Redis client libs
+RUN apk add \
+    python3 \
+    py3-pip \
+    build-base \
+    libffi-dev \
+    openssl-dev \
+    musl-dev \
+    gcc \
+    python3-dev \
+    linux-headers
+
+# Create a group 'appgroup' and a user 'user' belonging to that group
+# This avoids running the app as root for security reasons
+RUN addgroup -S appgroup && adduser -S user -G appgroup
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy Python dependencies file into the container
+COPY requirements.txt .
+
+# Install Python dependencies
+# --no-cache-dir → reduce image size
+# --break-system-packages → bypass PEP 668 restriction on system-managed Python environments (safe inside Docker)
+RUN pip install --break-system-packages --no-cache-dir -r requirements.txt
+
+# Copy application source code to the container
+COPY . .
+
+# Change ownership of app files to the non-root user and group
+RUN chown -R user:appgroup /app
+
+# Switch to the non-root user
+USER user
+
+# Run the Flask app
+CMD ["python3", "app.py"]
+

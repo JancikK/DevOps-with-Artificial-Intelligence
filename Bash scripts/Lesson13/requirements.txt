@@ -1,0 +1,2 @@
+flask  # Lightweight Python web framework
+redis  # Redis client library for Python
