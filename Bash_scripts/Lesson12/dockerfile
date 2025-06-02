@@ -1,0 +1,20 @@
+#Install Alpine with tag:version
+ARG testvarible=0.1
+
+FROM alpine:3.21.3
+#install python3 to run python apps
+RUN apk add --no-cache python3 py3-pip
+#Create a user and group with no root privileges
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+WORKDIR /app
+#Copy programm
+COPY hello.py .
+#SET Owner
+RUN chown -R appuser:appgroup /app
+#non-root user
+USER appuser
+
+EXPOSE 8000
+
+CMD ["python3", "hello.py"]
