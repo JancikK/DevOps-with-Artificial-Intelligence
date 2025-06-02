@@ -1,0 +1,6 @@
+{
+  "name": "John Williams",
+  "age": 25,
+  "grade": "A",
+  "subjects": ["Math", "Science", "History"]
+}
