@@ -1,0 +1,63 @@
+services:
+  web:
+    build: ./web
+    ports:
+      - "5000:5000"
+    depends_on:
+      - redis              # Wait for the Redis container to start before running the web service
+    healthcheck:           # Add a health check for the Flask app to ensure it's working
+      test:                # The test to run: this tries to curl the Flask homepage
+        ["CMD", "curl", "-f", "http://localhost:5000"]
+      interval: 10s        # Run the test every 10 seconds
+      timeout: 5s          # Fail the test if no response within 5 seconds
+      retries: 3           # Consider the container unhealthy after 3 failed checks
+
+  nginx:
+    build:
+      context: "./nginx"                 # Explicitly set the build context to the nginx folder
+      #dockerfile: "./nginx/Dockerfile"   # Use the Dockerfile inside the nginx folder
+    ports:
+      - "80:80"                          # Map host port 80 to container port 80 for public access
+    depends_on:
+      - web                              # Start NGINX only after the web (Flask) service is ready
+    healthcheck:                         # Health check for NGINX
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost"] 
+      # Silently request localhost to verify that NGINX is serving
+      interval: 10s            # Run health check every 10 seconds
+      timeout: 3s              # Timeout if response takes more than 3 seconds
+      retries: 3               # After 3 failures, mark the container as unhealthy
+  mysql:
+    image: mysql:8.0                      # Use official MySQL 8 image
+    environment:
+      MYSQL_ROOT_PASSWORD: root          # Set root password (DO NOT use in production!)
+      MYSQL_DATABASE: webdb              # Create database `webdb` automatically at startup
+    volumes:
+      - mysqldata:/var/lib/mysql         # Persist MySQL data using named volume
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]    # Test if MySQL is ready (responds to ping)
+      interval: 10s                      # Check every 10 seconds
+      timeout: 5s                        # Wait max 5 seconds for ping to return
+      retries: 3                         # Mark unhealthy after 3 failures
+
+  worker:
+    build: ./worker
+    depends_on:
+      - redis               # Wait for Redis to be running before starting the worker
+    healthcheck:            # Optional: ping Redis to check if the network and hostname are available
+      test: ["CMD", "ping", "-c", "1", "redis"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redis:
+    image: redis:7-alpine   # Use a small, fast Redis image
+    healthcheck:             # Ensure Redis is responding before allowing other services to depend on it
+      test:                 # Use redis-cli to send a ping command
+        ["CMD", "redis-cli", "ping"]
+      interval: 10s         # Check every 10 seconds
+      timeout: 3s           # Timeout after 3 seconds if no response
+      retries: 3            # Mark Redis as unhealthy after 3 failed pings
+
+volumes:      #Creating two named volumes
+  mysqldata:  #Stores all database files
+  redisdata:  #Persists Redis in-memory state
