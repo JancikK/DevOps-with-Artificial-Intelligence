@@ -1,0 +1,29 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Show directory structure
+        run: ls -R
+
+      - name: Build Docker image
+        run: docker build -t jancikk/lesson21-image:0.1 ./Bash_scripts/Lesson21
+
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKERHUBPASSWORD }}" | docker login -u "${{ secrets.DOCKERHUBUSERNAME }}" --password-stdin
+
+      - name: Push Docker image
+        run: docker push jancikk/lesson21-image:0.1
