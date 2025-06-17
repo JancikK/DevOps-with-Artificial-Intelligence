@@ -18,7 +18,7 @@ RUN echo 'root:password' | chpasswd
 # Set password for 'ansible' (optional, passwordless SSH will be used)
 RUN echo 'ansible:password' | chpasswd
 
-# Add 'ansible' user to sudoers for passwordless sudo access
+# Add 'ansible' user to sudoers for passwordless sudo accessgit commit --allow-empty -m "Push image now that Docker Hub repo exists"
 RUN echo 'ansible ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # Allow root login over SSH
