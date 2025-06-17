@@ -26,4 +26,4 @@ jobs:
         run: echo "${{ secrets.DOCKERHUBPASSWORD }}" | docker login -u "${{ secrets.DOCKERHUBUSERNAME }}" --password-stdin
 
       - name: Push Docker image
-        run: docker push jancikk/lesson21-image:0.1
+        run: docker push jancik/lesson21-image:0.1
