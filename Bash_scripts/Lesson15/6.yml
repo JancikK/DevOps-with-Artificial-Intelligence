@@ -1,0 +1,17 @@
+student1:
+  name: John Williams
+  age: 25
+  grade: A
+  subjects:
+    - &math Math
+    - Science
+    - History
+
+student2:
+  name: Emily Brown
+  age: 23
+  grade: B
+  subjects:
+    - *math
+    - Literature
+    - Art
