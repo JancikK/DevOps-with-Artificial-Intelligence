@@ -40,6 +40,20 @@ class Apskritimas(Figura):
 # ----------------------
 # Example usage
 
-plotis = 
-aukstis = 
+# Rectangle with user input
+plotis = float(input("Įveskite stačiakampio plotį: "))
+aukstis = float(input("Įveskite stačiakampio aukštį: "))
 staciakampis = Staciakampis(plotis, aukstis)
+
+# Circle with user input
+spindulys = float(input("Įveskite apskritimo spindulį: "))
+apskritimas = Apskritimas(spindulys)
+
+# Print results
+print("\n--- Stačiakampis ---")
+print("Plotas:", staciakampis.plotas())
+print("Perimetras:", staciakampis.perimetras())
+
+print("\n--- Apskritimas ---")
+print("Plotas:", round(apskritimas.plotas(), 2))
+print("Perimetras:", round(apskritimas.perimetras(), 2))
