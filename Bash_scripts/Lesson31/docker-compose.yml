@@ -1,0 +1,10 @@
+# File: Main/Bash_scripts/Lesson31/docker-compose.yml
+services:
+  app:
+    build: .
+    container_name: lesson31_app
+    image: lesson31-app
+    volumes:
+      - .:/app
+    stdin_open: true
+    tty: true

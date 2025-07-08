@@ -4,4 +4,12 @@
 .terraform.tfstate
 .terraform.tfstate.backup
 .terraform.lock.hcl
- 
+
+# Python cache files
+__pycache__/
+
+#venv
+venv/
+
+# .log files
+*.log

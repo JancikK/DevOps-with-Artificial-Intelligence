@@ -1,0 +1,38 @@
+FROM alpine:3.20
+
+# Python output setup
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Install Python, pip, venv support, and required libs
+RUN apk add --no-cache \
+    python3 \
+    py3-pip \
+    py3-virtualenv \
+    build-base \
+    libffi-dev \
+    openssl-dev
+
+# Create working directory
+WORKDIR /app
+
+# Create and activate a virtual environment
+# Install packages inside the venv
+COPY requirements.txt .
+
+RUN python3 -m venv /venv && \
+    . /venv/bin/activate && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Copy your application code
+COPY . .
+
+# Use non-root user for safety (optional)
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN chown -R appuser:appgroup /app
+USER appuser
+
+# Use the venv when running the app
+ENV PATH="/venv/bin:$PATH"
+
+CMD ["python", "main.py"]
