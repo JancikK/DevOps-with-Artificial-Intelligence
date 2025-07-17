@@ -7,9 +7,18 @@
 
 # Python cache files
 __pycache__/
+.pytest_cache/
 
 #venv
 venv/
 
 # .log files
 *.log
+
+# Database files
+*.sqlite3
+*.db
+.sqlite
+.sqlite3
+.db
+
