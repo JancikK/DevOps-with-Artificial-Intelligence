@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>URL Ping Checker</title>
+</head>
+<body>
+  <h2>Ping a URL</h2>
+  <input type="text" id="urlInput" placeholder="https://example.com" size="40">
+  <button onclick="pingUrl()">Ping</button>
+  <pre id="result"></pre>
+
+  <script>
+    async function pingUrl() {
+      const url = document.getElementById('urlInput').value;
+      const res = await fetch('/ping', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+
+      const data = await res.json();
+      document.getElementById('result').innerText = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>

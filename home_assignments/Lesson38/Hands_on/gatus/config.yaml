@@ -1,0 +1,6 @@
+endpoints:
+  - name: ping-app-health
+    url: http://app:5000/healthz
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"

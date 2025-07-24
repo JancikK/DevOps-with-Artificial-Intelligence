@@ -1,0 +1,80 @@
+services:
+  app:
+    build: ./app
+    container_name: ping_app
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./logs:/logs:rw
+    networks:
+      - internal
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+
+  elasticsearch:
+    image: elasticsearch:5.6.16-alpine
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+    networks:
+      - elk
+
+  logstash:
+    image: logstash:5.6.16-alpine
+    volumes:
+      - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./logs:/logs:ro
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk
+
+  kibana:
+    image: kibana:5.6.16
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - internal
+    read_only: true
+    tmpfs:
+      - /tmp
+
+  grafana:
+    image: grafana/grafana:12.1.0-ubuntu
+    ports:
+      - "3000:3000"
+    networks:
+      - internal
+    depends_on:
+      - prometheus
+
+  gatus:
+    image: twinproduction/gatus:v5.20.0
+    ports:
+      - "8081:8080"  # Change host port to 8081
+    volumes:
+      - ./gatus/config.yaml:/config/config.yaml
+    networks:
+      - internal
+    read_only: true
+
+networks:
+  elk:
+  internal:
